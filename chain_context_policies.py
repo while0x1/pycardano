@@ -16,5 +16,14 @@ policies = []
 for n in assetDict:
 	for q in n:
 		policies.append(q.to_primitive().hex())
-    
+		
+for n in assetDict:
+	if len(n) < 2:
+		keys = list(n)
+		policy_hex = keys[0].to_primitive().hex()
+		asset_name = list(n[keys[0]].to_primitive())[0]
+		asset_amount = list(n[keys[0]].to_primitive().values())[0]
+		print(policy_hex,asset_name,asset_amount)
+
+			
     
