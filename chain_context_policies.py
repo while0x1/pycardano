@@ -47,29 +47,34 @@ find_nft = MultiAsset.from_primitive({bytes.fromhex(find_policy): {find_name: 1}
 
 find_policy = '366a7e727f403128a0c87965b23aaa95965c22dfcb6f9f41318e8412'
 find_name = b'Cardano Circles'
-find_nft = MultiAsset.from_primitive({bytes.fromhex(find_policy): {find_name: 1} })
 
+def find_policy_utxo(utxos,find_policy,find_name):
+	
+	find_nft = MultiAsset.from_primitive({bytes.fromhex(find_policy): {find_name: 1} })
+	
+	for utxo in utxos:
+		if utxo.output.amount.multi_asset:
+			if len(utxo.output.amount.multi_asset) < 2:
+				print(utxo.output.amount.multi_asset)
+				if utxo.output.amount.multi_asset == find_nft:
+					print('Gotchya')
+					return utxo
+			else:
+				for items in utxo.output.amount.multi_asset:
+					policy = items.to_primitive().hex()
+					if len(utxo.output.amount.multi_asset[items]) < 2:
+						asset_name = list(utxo.output.amount.multi_asset[items].to_primitive())[0]
+						print(policy,asset_name)
+						if find_name == asset_name and find_policy == policy:
+							print('Gotchya Here!')
+							return(utxo)
+					else:
+						for names in utxo.output.amount.multi_asset[items]:
+							asset_name = names.to_primitive()
+							x = bytes(asset_name.decode('utf-8'), 'utf-8')
+							if find_name == x and find_policy == policy:
+								return(utxo)
+							print(policy,x)
+							
+find_policy_utxo(utxos,find_policy, find_name)
 
-for utxo in utxos:
-	if utxo.output.amount.multi_asset:
-		if len(utxo.output.amount.multi_asset) < 2:
-			if utxo.output.amount.multi_asset == find_nft:
-				print('Gotchya')
-		else:
-			for items in utxo.output.amount.multi_asset:
-				policy = items.to_primitive().hex()
-				if len(utxo.output.amount.multi_asset[items]) < 2:
-					asset_name = list(utxo.output.amount.multi_asset[items].to_primitive())[0]
-					print(policy,asset_name)
-					if find_name == asset_name and find_policy == policy:
-						print('Gotchya Here!')
-				else:
-					for names in utxo.output.amount.multi_asset[items]:
-						asset_name = names.to_primitive()
-						x = bytes(asset_name.decode('utf-8'), 'utf-8')
-						if find_name == x and find_policy == policy:
-							print('Gotchya Here!!!')
-						print(policy,x)
-						
-			
-    
